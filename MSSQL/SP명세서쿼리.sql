@@ -43,11 +43,12 @@ SET NOCOUNT ON
 
 INSERT INTO #Tables (Object_id, name, type, [definition])
 SELECT OJ.object_Id,'[' + S.name + '].[' + OJ.name + ']' AS name
-,CASE WHEN type = 'V' THEN 'View' WHEN type = 'U' THEN 'Table' WHEN type = 'P' THEN 'PROCEDURE' WHEN type = 'FN' THEN 'FUNCTION' END,SM.definition
+,CASE WHEN type = 'P' THEN 'PROCEDURE' WHEN type = 'FN' THEN 'SQL_SCALAR_FUNCTION' WHEN type = 'TF' THEN 'SQL_TABLE_VALUED_FUNCTION' END
+,SM.definition
 FROM sys.sql_modules AS SM
 JOIN sys.objects AS OJ ON SM.object_id = OJ.object_id
 LEFT OUTER JOIN sys.schemas AS S ON OJ.schema_id = S.schema_id
-WHERE OJ.type IN ('P','FN') AND is_ms_shipped = 0
+WHERE OJ.type IN ('P','FN','TF') AND is_ms_shipped = 0
 
 
 SET @maxi = @@rowcount
